@@ -118,10 +118,46 @@
     (setf *last-command* command))
   (save-state editor))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defparameter *history-stream* nil)
+
+(defun open-history-file (pathname editor)
+  (setf *history-stream* (open "/home/mpsyco/.cl-code-worker.d/history"
+				:direction :input
+				:if-does-not-exist nil))
+  (when *history-stream*
+    (dolist (line (read *history-stream*))
+    (print line)
+					;(buffer-push line (editor-history editor))
+    ))
+  
+  (setf *history-stream* (open "/home/mpsyco/.cl-code-worker.d/history"
+				:direction :output
+				:if-exists :append
+				:if-does-not-exist :create))
+  )
+
+(defun close-history-file ()
+  (close *history-stream*))
+
+;; (print (get-string editor) *history-file*)
+;; (finish-output *history-file*)
+
+;; save-line-history?
+(defun save-history-line (editor)
+  (print (get-string editor) *history-stream*))
+
 (defun get-finished-string (editor)
-  (buffer-push (get-string editor) (editor-history editor))
-  (newline editor)
-  (get-string editor))
+  (let ((line (get-string editor)))
+    ;; Save the line in the history
+    (buffer-push line (editor-history editor))
+    (print (get-string editor) *history-file*)
+
+    (newline editor)
+    line))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro with-editor-point-and-string (((point string) editor) &body forms)
   `(let ((,point (get-point ,editor))
