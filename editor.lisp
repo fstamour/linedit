@@ -141,8 +141,8 @@
 (defun close-history-file ()
   (close *history-stream*))
 
-;; (print (get-string editor) *history-file*)
-;; (finish-output *history-file*)
+;; (print (get-string editor) *history-stream*)
+;; (finish-output *history-stream*)
 
 ;; save-line-history?
 (defun save-history-line (editor)
@@ -152,7 +152,7 @@
   (let ((line (get-string editor)))
     ;; Save the line in the history
     (buffer-push line (editor-history editor))
-    (print (get-string editor) *history-file*)
+    (print (get-string editor) *history-stream*)
 
     (newline editor)
     line))
